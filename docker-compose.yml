@@ -1,0 +1,32 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+      - redis
+    environment:
+      DB_URL: mongodb://mongodb:27017/risevest
+      PORT: 3000
+      JWT_SECRET: s3cret
+      REDIS_URL: redis://redis:6379
+
+  mongodb:
+    image: mongo:4.2
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  mongodb-data:
+  redis-data:
