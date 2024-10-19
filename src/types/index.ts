@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { Mock } from "node:test";
 import { FixtureStatus, UserRoles } from "src/constants";
 import { User } from "src/database";
@@ -48,7 +49,6 @@ export type UserResponse = {
   username: string;
   createdAt: Date;
   updatedAt: Date;
-  deletedAt: Date;
 };
 
 export type FixtureResponse = {
@@ -63,6 +63,8 @@ export type FixtureResponse = {
     home: number;
     away: number;
   };
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type TeamResponse = {
@@ -112,5 +114,34 @@ export type PaginationOptions = {
   limit?: number;
   page?: number;
 };
+
+type HandlerMethod = (req: Request, res: Response) => void | Promise<void>;
+
+export interface IAuthController {
+  signUp: HandlerMethod;
+  login: HandlerMethod;
+}
+
+export interface IFixtureController {
+  createFixture: HandlerMethod;
+  updateFixture: HandlerMethod;
+  getFixture: HandlerMethod;
+  getFixtures: HandlerMethod;
+  deleteFixture: HandlerMethod;
+  generateLink: HandlerMethod;
+}
+
+export interface ITeamController {
+  createTeam: HandlerMethod;
+  updateTeam: HandlerMethod;
+  getTeam: HandlerMethod;
+  getTeams: HandlerMethod;
+  deleteTeam: HandlerMethod;
+}
+
+export interface IAuthMiddleware {
+  validateUser: HandlerMethod;
+  validatePayload: <T extends Object>(cls: { new (): T }) => HandlerMethod;
+}
 
 export type MockFn = Mock<() => any>;
