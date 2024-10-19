@@ -54,7 +54,6 @@ export const FixtureSchema = new mongoose.Schema(
       },
       default: { home: 0, away: 0 },
     },
-    deletedAt: { type: Date },
   },
   {
     toJSON: {

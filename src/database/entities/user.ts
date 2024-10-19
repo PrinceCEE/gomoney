@@ -40,7 +40,6 @@ export const UserSchema = new mongoose.Schema(
       required: true,
       enum: Object.values(UserRoles),
     },
-    deletedAt: { type: Date },
   },
   {
     toJSON: {

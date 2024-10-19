@@ -22,31 +22,54 @@ export class FixtureRepository {
   }
 
   async overlappingFixtureExists(homeTeam: string, awayTeam: string, time: Date) {
-    const fixtureExists = await this.fixtureModel.findOne({
-      homeTeam,
-      time: {
-        $gte: time,
-        $lte: addHours(time, 2), // assuming a normal game takes 2hrs with breaks et al
-      },
-    });
+    // assuming a normal game takes 2hrs with breaks et al
+    if (
+      await this.fixtureModel.findOne({
+        homeTeam,
+        time: {
+          $gte: time,
+          $lte: addHours(time, 2),
+        },
+      })
+    ) {
+      return true;
+    }
 
-    return !!fixtureExists;
+    if (
+      await this.fixtureModel.findOne({
+        awayTeam,
+        time: {
+          $gte: time,
+          $lte: addHours(time, 2),
+        },
+      })
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   async update(filter: FilterQuery<Fixture>, update: UpdateQuery<Fixture>, options?: QueryOptions) {
-    const fixture = await this.fixtureModel.findOneAndUpdate(filter, update, options);
+    const fixture = await this.fixtureModel
+      .findOneAndUpdate(filter, update, options)
+      .populate("homeTeam awayTeam");
     return fixture;
   }
 
   async findOneById(id: string) {
-    const fixture = await this.fixtureModel.findById(id);
+    const fixture = await this.fixtureModel.findById(id).populate("homeTeam awayTeam");
     return fixture;
   }
 
   async findMany(filter: FilterQuery<Fixture>, paginationOptions: PaginationOptions = {}) {
     const { limit, skip, page } = getPaginationOptions(paginationOptions);
     const totalDocs = await this.fixtureModel.countDocuments(filter);
-    const fixtures = await this.fixtureModel.find(filter).skip(skip).limit(limit);
+    const fixtures = await this.fixtureModel
+      .find(filter)
+      .skip(skip)
+      .limit(limit)
+      .populate("homeTeam awayTeam");
 
     return {
       fixtures,
@@ -55,12 +78,6 @@ export class FixtureRepository {
   }
 
   async delete(filter: FilterQuery<Fixture>, session?: ClientSession) {
-    const fixture = await this.fixtureModel.findOne({ ...filter, deletedAt: { $exists: false } });
-    if (!fixture) {
-      return;
-    }
-
-    fixture.deletedAt = new Date();
-    await fixture.save({ session });
+    await this.fixtureModel.findOneAndDelete(filter, { session });
   }
 }

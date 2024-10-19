@@ -43,12 +43,6 @@ export class UserRepository {
   }
 
   async delete(filter: FilterQuery<User>, session?: ClientSession) {
-    const user = await this.userModel.findOne({ ...filter, deletedAt: { $exists: false } });
-    if (!user) {
-      return;
-    }
-
-    user.deletedAt = new Date();
-    await user.save({ session });
+    await this.userModel.findOneAndDelete(filter, { session });
   }
 }

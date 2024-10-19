@@ -12,6 +12,7 @@ export class TeamRepository {
   }
 
   async update(filter: FilterQuery<Team>, update: UpdateQuery<Team>, options?: QueryOptions) {
+    filter = { ...filter, deletedAt: { $exists: false } };
     const team = await this.teamModel.findOneAndUpdate(filter, update, options);
     return team;
   }
@@ -21,7 +22,14 @@ export class TeamRepository {
     return team;
   }
 
+  async findOneByShortname(shortName: string) {
+    const team = await this.teamModel.findOne({ shortName });
+    return team;
+  }
+
   async findMany(filter: FilterQuery<Team>, paginationOptions: PaginationOptions = {}) {
+    filter = { ...filter, deletedAt: { $exists: false } };
+
     const { limit, skip, page } = getPaginationOptions(paginationOptions);
     const totalDocs = await this.teamModel.countDocuments(filter);
     const teams = await this.teamModel.find(filter).skip(skip).limit(limit);
@@ -33,7 +41,8 @@ export class TeamRepository {
   }
 
   async delete(filter: FilterQuery<Team>, session?: ClientSession) {
-    const team = await this.teamModel.findOne({ ...filter, deletedAt: { $exists: false } });
+    filter = { ...filter, deletedAt: { $exists: false } };
+    const team = await this.teamModel.findOne(filter);
     if (!team) {
       return;
     }
