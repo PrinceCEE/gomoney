@@ -37,7 +37,6 @@ export const mapUserToUserResponse = (user: User): UserResponse => {
     role: user.role,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
-    deletedAt: user.deletedAt,
   };
 };
 
@@ -68,6 +67,8 @@ export const mapFixtureToFixtureResponse = (fixture: Fixture): FixtureResponse =
     status: fixture.status,
     referee: fixture.referee,
     score: fixture.score,
+    createdAt: fixture.createdAt,
+    updatedAt: fixture.updatedAt,
   };
 };
 
