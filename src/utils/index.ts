@@ -3,7 +3,7 @@ import { sign, verify } from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
 import { Fixture, Team, User } from "src/database";
 import { UnauthorizedError } from "src/errors";
-import { FixtureResponse, TeamResponse, UserResponse } from "src/types";
+import { FixtureResponse, PaginationOptions, TeamResponse, UserResponse } from "src/types";
 import { NextFunction, Request, Response } from "express";
 
 export const hashPassword = async (pwd: string) => {
@@ -34,6 +34,7 @@ export const mapUserToUserResponse = (user: User): UserResponse => {
     lastName: user.lastName,
     email: user.email,
     username: user.username,
+    role: user.role,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     deletedAt: user.deletedAt,
@@ -100,5 +101,24 @@ export const Handler = (): MethodDecorator => {
         return boundFn;
       },
     };
+  };
+};
+
+export const getPaginationOptions = (opts: PaginationOptions) => {
+  const limit = opts.limit || 10;
+  const page = opts.page || 0;
+
+  return {
+    limit,
+    page,
+    skip: page * limit,
+  };
+};
+
+export const getPaginationMeta = (page: number, limit: number, totalDocs: number) => {
+  return {
+    page,
+    totalPages: Math.ceil(totalDocs / limit),
+    sizePerPage: limit,
   };
 };

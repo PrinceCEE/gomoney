@@ -1,5 +1,5 @@
 import { Mock } from "node:test";
-import { FixtureStatus } from "src/constants";
+import { FixtureStatus, UserRoles } from "src/constants";
 import { User } from "src/database";
 import { FixturesService, TeamsService, UserService } from "src/services";
 
@@ -32,6 +32,11 @@ export interface ApiResponse<T = null> {
   success: boolean;
   message: string;
   data?: T;
+  meta?: {
+    page: number;
+    totalPages: number;
+    sizePerPage: number;
+  };
 }
 
 export type UserResponse = {
@@ -39,6 +44,7 @@ export type UserResponse = {
   firstName: string;
   lastName: string;
   email: string;
+  role: UserRoles;
   username: string;
   createdAt: Date;
   updatedAt: Date;
@@ -72,6 +78,39 @@ export type TeamResponse = {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;
+};
+
+export type CreateUser = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  username: string;
+  password: string;
+};
+
+export type CreateTeam = {
+  name: string;
+  shortName: string;
+  location: string;
+  stadium: string;
+  yearFounded: string;
+  manager: string;
+  website?: string;
+  logoUrl?: string;
+};
+
+export type CreateFixture = {
+  homeTeam: string;
+  awayTeam: string;
+  time: Date;
+  stadium: string;
+  referee: string;
+};
+
+export type PaginationOptions = {
+  limit?: number;
+  page?: number;
 };
 
 export type MockFn = Mock<() => any>;

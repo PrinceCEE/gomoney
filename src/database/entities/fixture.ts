@@ -40,6 +40,7 @@ export const FixtureSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: Object.values(FixtureStatus),
+      default: FixtureStatus.SCHEDULED,
     },
     referee: {
       type: String,
@@ -48,10 +49,10 @@ export const FixtureSchema = new mongoose.Schema(
     score: {
       type: {
         _id: false,
-        home: { type: Number, default: 0 },
-        away: { type: Number, default: 0 },
+        home: Number,
+        away: Number,
       },
-      default: {},
+      default: { home: 0, away: 0 },
     },
     deletedAt: { type: Date },
   },
